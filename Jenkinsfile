@@ -6,7 +6,7 @@ pipeline {
         properties = null
         docker_port = 7100
         username = 'bhardwajakash'
-		container_exist = "${bat(script:'docker ps -q -f name=ecommerce', returnStdout: true).trim().readLines().drop(1).join("")}"
+		container_exist = "${bat(script:'docker ps -q -f name=c-${username}-master', returnStdout: true).trim().readLines().drop(1).join("")}"
     }
     stages {
         stage ('Clean workspace') {
@@ -45,13 +45,13 @@ pipeline {
             steps{
                 echo "Docker Image Step"
                 bat "dotnet publish -c Release"
-                bat "docker build -t i_${username}_master --no-cache -f Dockerfile ."
+                bat "docker build -t i-${username}-master --no-cache -f Dockerfile ."
             }
         }
         stage('Push Docker Image to Docker Hub'){
             steps{
                 echo "Move Image to docker hub"
-                bat "docker tag i_${username}_master ${registry}:${BUILD_NUMBER}"
+                bat "docker tag i-${username}-master ${registry}:${BUILD_NUMBER}"
                 withDockerRegistry([credentialsId: 'DockerHub',url:""]){
                     bat "docker push ${registry}:${BUILD_NUMBER}"
                 }
@@ -63,10 +63,10 @@ pipeline {
                     echo "ecommerce container already exist with container id = ${env.container_exist}"
                     if (env.container_exist != null) {
                         echo "Deleting existing ecommerce container"
-                        bat "docker stop ecommerce && docker rm ecommerce"
+                        bat "docker stop c-${username}-master && docker rm c-${username}-master"
                     }
                     echo "Docker Deployment"
-                    bat "docker run --name ecommerce -d -p 7100:80 ${registry}:${BUILD_NUMBER}"
+                    bat "docker run --name c-${username}-master -d -p 7100:80 ${registry}:${BUILD_NUMBER}"
                 }
             }
         }
