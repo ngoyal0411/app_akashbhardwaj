@@ -6,7 +6,7 @@ pipeline {
         properties = null
         docker_port = 7100
         username = 'bhardwajakash'
-		container_exist = "${bat(script:'docker ps -q -f name=c-${username}-master', returnStdout: true).trim().readLines().drop(1).join("")}"
+		container_exist = "${bat(script:'docker ps -q -f name=c-bhardwajakash-master', returnStdout: true).trim().readLines().drop(1).join("")}"
     }
     stages {
         stage ('Clean workspace') {
