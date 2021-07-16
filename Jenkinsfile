@@ -60,9 +60,9 @@ pipeline {
         stage('Docker Deployment'){
             steps{
                 script {
-                    echo "ecommerce container already exist with container id = ${env.container_exist}"
+                    echo "c-${username}-master container already exist with container id = ${env.container_exist}"
                     if (env.container_exist != null) {
-                        echo "Deleting existing ecommerce container"
+                        echo "Deleting existing c-${username}-master container"
                         bat "docker stop c-${username}-master && docker rm c-${username}-master"
                     }
                     echo "Docker Deployment"
