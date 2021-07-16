@@ -33,6 +33,8 @@ pipeline {
 			steps{
 				withSonarQubeEnv('Test_Sonar') {
 				  bat "dotnet ${scannerHome}\\SonarScanner.MSBuild.dll begin /k:\"sonar-akashbhardwaj\""
+				  echo "clean previous build"
+				  bat "dotnet clean"
 				  bat "dotnet build"
 				  bat "dotnet test"
 				  bat "dotnet ${scannerHome}\\SonarScanner.MSBuild.dll end"
