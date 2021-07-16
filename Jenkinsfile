@@ -6,7 +6,7 @@ pipeline {
         properties = null
         docker_port = 7100
         username = 'bhardwajakash'
-		container_exist = "${bat(script:'docker ps -q -f name=Ecommerce', returnStdout: true).trim().readLines().drop(1).join("")}"
+		container_exist = "${bat(script:'docker ps -q -f name=ecommerce', returnStdout: true).trim().readLines().drop(1).join("")}"
     }
     stages {
         stage ('Clean workspace') {
@@ -60,13 +60,13 @@ pipeline {
         stage('Docker Deployment'){
             steps{
                 script {
-                    echo "Ecommerce container already exist with container id = ${env.container_exist}"
+                    echo "ecommerce container already exist with container id = ${env.container_exist}"
                     if (env.container_exist != null) {
-                        echo "Deleting existing Ecommerce container"
-                        bat "docker stop Ecommerce && docker rm Ecommerce"
+                        echo "Deleting existing ecommerce container"
+                        bat "docker stop ecommerce && docker rm ecommerce"
                     }
                     echo "Docker Deployment"
-                    bat "docker run --name Ecommerce -d -p 7100:80 ${registry}:${BUILD_NUMBER}"
+                    bat "docker run --name ecommerce -d -p 7100:80 ${registry}:${BUILD_NUMBER}"
                 }
             }
         }
