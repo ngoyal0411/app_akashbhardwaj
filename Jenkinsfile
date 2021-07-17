@@ -32,12 +32,12 @@ pipeline {
 		stage('SonarQube code Analysis') {
 			steps{
 				withSonarQubeEnv('Test_Sonar') {
-				  bat "dotnet ${scannerHome}\\SonarScanner.MSBuild.dll begin /k:\"sonar-akashbhardwaj\" /d:sonar.login="efd3f45d08383412de2d040b2c249fee91a921d6""
+				  bat "dotnet ${scannerHome}\\SonarScanner.MSBuild.dll begin /k:sonar-akashbhardwaj /d:sonar.login=efd3f45d08383412de2d040b2c249fee91a921d6"
 				  echo "clean previous build"
 				  bat "dotnet clean"
 				  bat "dotnet build"
 				  bat "dotnet test"
-				  bat "dotnet ${scannerHome}\\SonarScanner.MSBuild.dll end /d:sonar.login="efd3f45d08383412de2d040b2c249fee91a921d6""
+				  bat "dotnet ${scannerHome}\\SonarScanner.MSBuild.dll end /d:sonar.login=efd3f45d08383412de2d040b2c249fee91a921d6"
 				}
 			}
 		}
