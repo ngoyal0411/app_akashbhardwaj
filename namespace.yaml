@@ -1,0 +1,6 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+    name: kubernetes-cluster-akashbhardwaj
+    labels:
+        name: kubernetes-cluster-akashbhardwaj

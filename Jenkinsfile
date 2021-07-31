@@ -4,12 +4,13 @@ pipeline {
         scannerHome = tool 'sonar_scanner_dotnet'
         registry = 'bhardwajakash/ecommerce'
         properties = null
-        docker_port = 7100
+        docker_port = null
         username = 'bhardwajakash'
 		project_id = 'testjenkinsapi-321504'
         cluster_name = 'test-cluster'
         location = 'us-central1-c'
         credentials_id = 'TestJenkinsAPI'
+        namespace = 'kubernetes-cluster-akashbhardwaj'
 		container_exist = "${bat(script:'docker ps -a -q -f name=c-bhardwajakash-master', returnStdout: true).trim().readLines().drop(1).join("")}"
     }
 	options{
@@ -22,10 +23,18 @@ pipeline {
         ))
     }
     stages {
-        stage ('Start') {
-          steps {
-            git 'https://github.com/Akash0511/Ecommerce.git'
-          }
+        stage('Checkout'){
+            steps{
+                echo "Checkout from git repository for branch - ${BRANCH_NAME}"
+                git 'https://github.com/Akash0511/Ecommerce.git'
+                script{
+                    if (BRANCH_NAME == 'master') {
+                        docker_port = 7200
+                    } else {
+                        docker_port = 7300
+                    }
+                }
+            }
         }
 		stage('nuget restore'){
             steps{
@@ -74,11 +83,11 @@ pipeline {
             }
         }
 		
-		stage('Create Docker Image'){
+		stage('Docker Image'){
             steps{
                 echo "Docker Image Step"
                 bat "dotnet publish -c Release"
-                bat "docker build -t i-${username}-master --no-cache -f Dockerfile ."
+                bat "docker build -t i-${username}-${BRANCH_NAME}:${BUILD_NUMBER} --no-cache -f Dockerfile ."
             }
         }
 		stage('Containers') {
@@ -96,8 +105,8 @@ pipeline {
                     "Push to Docker Hub": {
                         script{
                             echo "Push to Docker Hub"
-                            bat "docker tag i-${username}-master ${registry}:${BUILD_NUMBER}"
-							bat "docker tag i-${username}-master ${registry}:latest"
+                            bat "docker tag i-${username}-${BRANCH_NAME}:${BUILD_NUMBER} ${registry}:${BUILD_NUMBER}"
+							bat "docker tag i-${username}-${BRANCH_NAME}:${BUILD_NUMBER} ${registry}:latest"
                             withDockerRegistry([credentialsId:'DockerHub',url:""]){
                                 bat "docker push ${registry}:${BUILD_NUMBER}"
 								bat "docker push ${registry}:latest"
@@ -110,13 +119,14 @@ pipeline {
         stage('Docker Deployment'){
             steps{
 				echo "Docker Deployment"
-				bat "docker run --name c-${username}-master -d -p 7100:80 ${registry}:${BUILD_NUMBER}"
+				bat "docker run --name c-${username}-master -d -p ${docker_port}:80 ${registry}:${BUILD_NUMBER}"
             }
         }
 		stage('Kubernetes Deployment'){
             steps{
                 echo "Kubernetes Deployment"
-				step([$class:'KubernetesEngineBuilder',projectId:env.project_id,clusterName:env.cluster_name,location:env.location,manifestPattern:'deployment.yaml',credentialsId:env.credentials_id,verifyDeployments:true])
+                step([$class:'KubernetesEngineBuilder',namespace:env.namespace,projectId:env.project_id,clusterName:env.cluster_name,location:env.location,manifestPattern:'service.yaml',credentialsId:env.credentials_id,verifyDeployments:false])
+				step([$class:'KubernetesEngineBuilder',namespace:env.namespace,projectId:env.project_id,clusterName:env.cluster_name,location:env.location,manifestPattern:'deployment.yaml',credentialsId:env.credentials_id,verifyDeployments:true])
             }
         }
     }
