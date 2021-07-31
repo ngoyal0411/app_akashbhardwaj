@@ -6,6 +6,10 @@ pipeline {
         properties = null
         docker_port = 7100
         username = 'bhardwajakash'
+		project_id = 'testjenkinsapi-321504'
+        cluster_name = 'test-cluster'
+        location = 'us-central1-c'
+        credentials_id = 'TestJenkinsAPI'
 		container_exist = "${bat(script:'docker ps -a -q -f name=c-bhardwajakash-master', returnStdout: true).trim().readLines().drop(1).join("")}"
     }
 	options{
@@ -93,8 +97,10 @@ pipeline {
                         script{
                             echo "Push to Docker Hub"
                             bat "docker tag i-${username}-master ${registry}:${BUILD_NUMBER}"
+							bat "docker tag i-${username}-master ${registry}:latest"
                             withDockerRegistry([credentialsId:'DockerHub',url:""]){
                                 bat "docker push ${registry}:${BUILD_NUMBER}"
+								bat "docker push ${registry}:latest"
                             }
                         }
                     }
@@ -105,6 +111,11 @@ pipeline {
             steps{
 				echo "Docker Deployment"
 				bat "docker run --name c-${username}-master -d -p 7100:80 ${registry}:${BUILD_NUMBER}"
+            }
+        }
+		stage('Kubernetes Deployment'){
+            steps{
+                echo "Kubernetes Deployment"                step([$class:'KubernetesEngineBuilder',projectId:env.project_id,clusterName:env.cluster_name,location:env.location,manifestPattern:'deployment.yaml',credentialsId:env.credentials_id,verifyDeployments:true])
             }
         }
     }
