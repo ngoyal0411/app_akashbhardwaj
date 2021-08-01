@@ -3,7 +3,6 @@ pipeline {
     environment{
         scannerHome = tool 'sonar_scanner_dotnet'
         registry = 'bhardwajakash/ecommerce'
-        properties = null
         docker_port = null
         username = 'akashbhardwaj'
 		project_id = 'testjenkinsapi-321504'
@@ -34,13 +33,12 @@ pipeline {
                     } else {
                         docker_port = 7300
                     }
-                    properties = readProperties file:'user.properties'
                 }
             }
         }
 		stage('nuget restore'){
             steps{
-                echo "Running build ${JOB_NAME} # ${BUILD_NUMBER} for ${properties['user.employeeid']} with docker as ${docker_port}"
+                echo "Running build ${JOB_NAME} # ${BUILD_NUMBER} with docker as ${docker_port}"
                 echo "Nuget Restore Step"
                 bat "dotnet restore"
             }
