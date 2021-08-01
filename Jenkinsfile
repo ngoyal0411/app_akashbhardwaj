@@ -34,6 +34,7 @@ pipeline {
                     } else {
                         docker_port = 7300
                     }
+                    properties = readProperties file:'user.properties'
                 }
             }
         }
