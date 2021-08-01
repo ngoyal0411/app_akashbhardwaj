@@ -5,7 +5,7 @@ pipeline {
         registry = 'bhardwajakash/ecommerce'
         properties = null
         docker_port = null
-        username = 'bhardwajakash'
+        username = 'akashbhardwaj'
 		project_id = 'testjenkinsapi-321504'
         cluster_name = 'test-cluster'
         location = 'us-central1-c'
