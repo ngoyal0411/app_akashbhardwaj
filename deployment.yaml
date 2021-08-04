@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: ecommerce-app-deployment
+    name: ecommerce-app-deployment-develop
     namespace: kubernetes-cluster-akashbhardwaj
     labels:
-        app: ecommerce-app
+        app: ecommerce-app-develop
 spec:
     replicas: 4
     selector:
         matchLabels:
-            app: ecommerce-app
+            app: ecommerce-app-develop
     template:
         metadata:
             labels:
-                app: ecommerce-app
+                app: ecommerce-app-develop
         spec:
             containers:
-                - name: ecommerce-app
-                  image: bhardwajakash/ecommerce:latest
+                - name: ecommerce-app-develop
+                  image: bhardwajakash/ecommerce:latest-develop
                   ports:
                     - name: http
                       containerPort: 80

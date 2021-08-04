@@ -5,11 +5,6 @@ pipeline {
         registry = 'bhardwajakash/ecommerce'
         docker_port = null
         username = 'akashbhardwaj'
-		project_id = 'testjenkinsapi-321504'
-        cluster_name = 'test-cluster'
-        location = 'us-central1-c'
-        credentials_id = 'TestJenkinsAPI'
-        namespace = 'kubernetes-cluster-akashbhardwaj'
         container_name = "c-${username}-${BRANCH_NAME}"
 		container_exist = "${bat(script:"docker ps -a -q -f name=${env.container_name}", returnStdout: true).trim().readLines().drop(1).join("")}"
     }
@@ -26,7 +21,7 @@ pipeline {
         stage('Checkout'){
             steps{
                 echo "Checkout from git repository for branch - ${BRANCH_NAME}"
-                git 'https://github.com/Akash0511/Ecommerce.git'
+                checkout scm
                 script{
                     if (BRANCH_NAME == 'master') {
                         docker_port = 7200
@@ -105,11 +100,11 @@ pipeline {
                     "Push to Docker Hub": {
                         script{
                             echo "Push to Docker Hub"
-                            bat "docker tag i-${username}-${BRANCH_NAME}:${BUILD_NUMBER} ${registry}:${BUILD_NUMBER}"
-							bat "docker tag i-${username}-${BRANCH_NAME}:${BUILD_NUMBER} ${registry}:latest"
+                            bat "docker tag i-${username}-${BRANCH_NAME}:${BUILD_NUMBER} ${registry}:${BRANCH_NAME}-${BUILD_NUMBER}"
+							bat "docker tag i-${username}-${BRANCH_NAME}:${BUILD_NUMBER} ${registry}:latest-${BRANCH_NAME}"
                             withDockerRegistry([credentialsId:'DockerHub',url:""]){
-                                bat "docker push ${registry}:${BUILD_NUMBER}"
-								bat "docker push ${registry}:latest"
+                                bat "docker push ${registry}:${BRANCH_NAME}-${BUILD_NUMBER}"
+								bat "docker push ${registry}:latest-${BRANCH_NAME}"
                             }
                         }
                     }
@@ -119,14 +114,14 @@ pipeline {
         stage('Docker Deployment'){
             steps{
 				echo "Docker Deployment"
-				bat "docker run --name ${env.container_name} -d -p ${docker_port}:80 ${registry}:${BUILD_NUMBER}"
+				bat "docker run --name ${env.container_name} -d -p ${docker_port}:80 ${registry}:${BRANCH_NAME}-${BUILD_NUMBER}"
             }
         }
 		stage('Kubernetes Deployment'){
             steps{
                 echo "Kubernetes Deployment"
-                step([$class:'KubernetesEngineBuilder',namespace:env.namespace,projectId:env.project_id,clusterName:env.cluster_name,location:env.location,manifestPattern:'service.yaml',credentialsId:env.credentials_id,verifyDeployments:false])
-				step([$class:'KubernetesEngineBuilder',namespace:env.namespace,projectId:env.project_id,clusterName:env.cluster_name,location:env.location,manifestPattern:'deployment.yaml',credentialsId:env.credentials_id,verifyDeployments:true])
+                bat "kubectl apply -f service.yaml"
+                bat "kubectl apply -f deployment.yaml"
             }
         }
     }
