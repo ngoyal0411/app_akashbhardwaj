@@ -17,7 +17,7 @@ spec:
         spec:
             containers:
                 - name: ecommerce-app
-                  image: bhardwajakash/ecommerce:latest
+                  image: bhardwajakash/ecommerce:latest-master
                   ports:
                     - name: http
                       containerPort: 80
