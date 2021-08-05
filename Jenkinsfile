@@ -34,8 +34,8 @@ pipeline {
 		stage('Kubernetes Deployment'){
             steps{
                 echo "Kubernetes Deployment"
-                bat 'kubectl create -f deployment.yaml'
-                bat 'kubectl create -f service.yaml'
+                bat 'kubectl apply -f deployment.yaml'
+                bat 'kubectl apply -f service.yaml'
             }
         }
     }
