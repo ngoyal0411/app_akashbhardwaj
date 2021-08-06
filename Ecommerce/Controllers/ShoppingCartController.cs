@@ -41,6 +41,7 @@ namespace Ecommerce.Controllers
         public ActionResult<ShoppingItem> Get(int id)
         {
             var item = _service.GetById(id);
+
             if (item == null)
             {
                 return NotFound();
