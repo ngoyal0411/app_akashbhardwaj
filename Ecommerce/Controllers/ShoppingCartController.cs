@@ -42,7 +42,6 @@ namespace Ecommerce.Controllers
         public ActionResult<ShoppingItem> Get(int id)
         {
             var item = _service.GetById(id);
-
             if (item == null)
             {
                 return NotFound();
@@ -60,7 +59,6 @@ namespace Ecommerce.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             var item = _service.Add(value);
             return CreatedAtAction("Get", new { id = item.Id }, item);
         }
