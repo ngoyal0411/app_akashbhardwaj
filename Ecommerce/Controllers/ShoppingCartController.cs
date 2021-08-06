@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class ShoppingCartController : ControllerBase
     {
@@ -21,6 +20,15 @@ namespace Ecommerce.Controllers
         }
 
         // GET api/shoppingcart
+        [Route("")]
+        [HttpGet]
+        public ActionResult<string> GetData()
+        {
+            return "Hello from develop branch";
+        }
+
+        // GET api/shoppingcart
+        [Route("api/[controller]")]
         [HttpGet]
         public ActionResult<IEnumerable<ShoppingItem>> Get()
         {
@@ -29,6 +37,7 @@ namespace Ecommerce.Controllers
         }
 
         // GET api/shoppingcart/5
+        [Route("api/[controller]")]
         [HttpGet("{id}")]
         public ActionResult<ShoppingItem> Get(int id)
         {
@@ -42,6 +51,7 @@ namespace Ecommerce.Controllers
             return Ok(item);
         }
 
+        [Route("api/[controller]")]
         // POST api/shoppingcart
         [HttpPost]
         public ActionResult Post([FromBody] ShoppingItem value)
