@@ -46,7 +46,6 @@ namespace Ecommerce.Controllers
             {
                 return NotFound();
             }
-
             return Ok(item);
         }
 
