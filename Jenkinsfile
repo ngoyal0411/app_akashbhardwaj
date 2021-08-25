@@ -38,6 +38,7 @@ pipeline {
                 bat "dotnet restore"
             }
         }
+		/*
 		stage('SonarQube code Analysis') {
 			when {
                 branch 'master'
@@ -49,6 +50,7 @@ pipeline {
                 }
             }
 		}
+		*/
 		stage('Code build'){
             steps{
                 echo "Clean Previous Build"
@@ -57,6 +59,7 @@ pipeline {
 				bat "dotnet build"
             }
         }
+		/*
 		stage('Stop sonarqube analysis'){
             when {
                 branch 'master'
@@ -68,6 +71,7 @@ pipeline {
                 }
             }
         }
+		*/
 		stage('Release artifact'){
             when {
                 branch 'develop'
